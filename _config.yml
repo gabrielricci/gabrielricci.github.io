@@ -27,9 +27,6 @@ url: "https://gabrielricci.github.com"
 github:
   username: gabrielricci # change to your github username
 
-twitter:
-  username: gabrielricci # change to your twitter username
-
 social:
   name: Gabriel Ricci
   email: gabrielricci@gmail.com
@@ -68,7 +65,7 @@ theme_mode: dark
 img_cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar:
+avatar: https://media.licdn.com/dms/image/C4D03AQEKts4fdPjfBQ/profile-displayphoto-shrink_800_800/0/1574797045229?e=1703116800&v=beta&t=Ru2L5VuLrF49xBwSreIvwJKE6c0Qilg0exIjsPL_1UU
 
 # boolean type, the global switch for TOC in posts.
 toc: true
