@@ -21,7 +21,7 @@ The input layer has a size of 784 (28px * 28px), which will receive the pixel da
 
 ```rust
 let mut model = DeepNeuralNetwork {
-        layers: vec![
+layers: vec![
             Layer {
                 size: 784,
                 activation_function: Box::new(ReLU {}),
@@ -32,7 +32,7 @@ let mut model = DeepNeuralNetwork {
             },
             Layer {
                 size: 10,
-                activation_function: Box::new(Sigmoid {}), // TODO: Not ideal for outputs w/ multiple classes, but my softmax is broken :(
+                activation_function: Box::new(Softmax {}), // Sigmoid also supported
             },
         ],
         learning_rate: 0.1,
@@ -65,14 +65,52 @@ Other types of neural networks are:
 - Regression 
 - Sequence to sequence
 - Generative models
-- ...p
+- ...
 
 ## Activation functions
 
-I've also wanted to code the activation functions manually instead of relying on existing implementation. In the network I've developed, I'm using ReLU for the hidden layer and Sigmoid for the output layer. 
+I've also wanted to code the activation functions manually instead of relying on existing implementation. In the network I've developed, I'm using ReLU for the hidden layer and Softmax for the output layer. I have also implemented Sigmoid and created simple interfaces so that other activation methods can be easily added.
 
-Sigmoid is not the best solution for classification networks however and Softmax should in theory work better but I did not implement my version of Softmax yet. 
+```rust
+pub trait ActivationFunction {
+    fn activate(&self, z: Array2<f32>) -> Array2<f32>;
+    fn derive(&self, da: Array2<f32>, z: Array2<f32>, labels: Array2<f32>) -> Array2<f32>;
+}
+
+pub struct Sigmoid {}
+pub struct ReLU {}
+pub struct Softmax {}
+
+impl ActivationFunction for Sigmoid {
+    fn activate(&self, z: Array2<f32>) -> Array2<f32> {
+        z.mapv(|x| sigmoid(&x))
+    }
+
+    fn derive(&self, da: Array2<f32>, z: Array2<f32>, _labels: Array2<f32>) -> Array2<f32> {
+        da * z.mapv(|x| sigmoid_derivative(&x))
+    }
+}
+
+// sigmoid functions
+fn sigmoid(z: &f32) -> f32 {
+    1.0 / (1.0 + E.powf(-z))
+}
+
+fn sigmoid_derivative(z: &f32) -> f32 {
+    sigmoid(z) * (1.0 - sigmoid(z))
+}
+
+// ...code for ReLU and Softmax in the repository
+```
 
 ## Code 
 
 You can check the full code in my [rust-neuralnets repo](https://github.com/gabrielricci/rust-neuralnets/tree/main). Please feel free to share any feedbacks.
+
+## What's next
+
+- Add tests (!!!)
+- Fix the scoring function (currently broken)
+- Fix the loss function (currently broken)
+- Support dynamic parameter initialization methods
+- Test the neural network w/ binary output cases and multilabel classification
